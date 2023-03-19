@@ -9,6 +9,8 @@ class paymobController extends Controller
 {
     public $API = 'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRZNE1UTTVMQ0p1WVcxbElqb2lNVFkzT1RBM05UQXdOeTQ1TVRZNU5qY2lmUS5CN2lhTEFxMU9OaUdZenBfa29hcUZMazNhOTNWRU5FNWFsY1VFRG03azBTU0kxZm9Lcm52WllGMHlUdDMwUHd3VHRJNGdsT3RFZWFLVURHM0ExWkNydw==';
     public $IframeID = 370320;
+    public $integration_id_mobile = 2179983;
+    public $integration_id_card = 1987498;
 
     public function step1(){
         try{
@@ -52,7 +54,7 @@ class paymobController extends Controller
                     "first_name" => "Clifford",
                     "street" => "Ethan Land",
                     "building" => "8028",
-                    "phone_number" => "+86(8)9135210487",
+                    "phone_number" => "+201010101010",
                     "shipping_method" => "PKG",
                     "postal_code" => "01898",
                     "city" => "Jaskolskiburgh",
@@ -61,13 +63,30 @@ class paymobController extends Controller
                     "state" => "Utah"
                 ],
                 "currency" => "EGP",
-                "integration_id" =>  1987498,
+                // "integration_id" =>  $this->integration_id_mobile,
+                "integration_id" =>  $this->integration_id_card,
                 "lock_order_when_paid" => "false",
             ]);
             $newToken = $response->object()->token;
+            // return $this->mobileWallet($newToken);    // activate for mobile wallet
             return response()->json(['msg' => "https://accept.paymobsolutions.com/api/acceptance/iframes/{$this->IframeID}?payment_token={$newToken}"]);
         }catch(\Exception $e ){
             return response()->json(['msg' => $e->getMessage()]);
+        }
+    }
+
+    public function mobileWallet($token){
+        try{
+            $response = Http::post('https://accept.paymob.com/api/acceptance/payments/pay' , [
+                "source" => [
+                    "identifier" => "+201010101010",
+                    "subtype" => "WALLET" ,
+                ],
+                "payment_token" => $token
+            ]);
+            return response()->json(['msg' => $response->object()]);
+        }catch(\Exception $e){
+            return response()->json(['msg' => 'errrrrorrrr']);
         }
     }
 
